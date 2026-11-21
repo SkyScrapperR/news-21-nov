@@ -1,0 +1,7 @@
+node_modules/
+out*/
+scratch/
+*.render.png
+*.log
+.playwright-mcp/
+transcripts*.tar.gz

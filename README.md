@@ -17,8 +17,8 @@ six key numbers, a region bar, three illustrated lead stories, ten illustrated t
 
 - `gfx.ts` parses TrueType fonts (glyf outlines, cmap, GPOS kerning), rasterises paths with exact-area
   anti-aliasing and writes an indexed PNG (deterministic median-cut palette, zlib from the standard library).
-- `art.ts` holds the hand-coded illustrations (Gulf map with a Hormuz inset, a cross-section of the Peru quake,
-  the COP31 overtime calendar, ten tile drawings).
+- `art.ts` holds the hand-coded illustrations (a Gulf strike map, a cross-section of the deep Peru quake,
+  the COP31 overtime calendar, ten tile drawings, each with one big key fact).
 - `world.ts` holds hand-made coarse coastlines for the pin map; `news.ts` holds the stories.
 - Node 22, standard library only, no network; two runs write the same bytes.
 

@@ -105,7 +105,7 @@ export const NUMBERS = [
 // UTC times as stated by outlets; '≈' marks a time known only to the part of the day.
 export const TIMELINE = [
   { t: '00:09', h: 0.15, label: 'Peru quake', sub: 'M6.7, Junín (USGS)', region: 'AM' },
-  { t: '02:15', h: 2.25, label: 'Finland', sub: 'shuts Gulf airspace', region: 'EU' },
+  { t: '02:15', h: 2.25, label: 'Finland', sub: 'restricts Gulf airspace', region: 'EU' },
   { t: '04:00', h: 4.0, label: 'Las Vegas', sub: 'qualifying: Verstappen', region: 'AM' },
   { t: '05:00', h: 5.0, label: 'Tanker hit', sub: '11 nm N of Khasab', region: 'ME' },
   { t: '05:50', h: 5.83, label: 'Second tanker', sub: '17 nm E (UKMTO)', region: 'ME' },

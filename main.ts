@@ -212,12 +212,25 @@ let y = 134;
   cv.noClip();
   // pins, larger stories on top
   const pinned = [...BRIEFS, ...TILES, ...HEROES].filter((s) => s.lon !== undefined);
+  // dense Europe: pins move to a callout row over the Arctic, with leader lines to the true spot
+  const inEurope = (s: Story) => s.lon! > -12 && s.lon! < 36 && s.lat! > 43 && s.lat! < 64;
+  const eu = pinned.filter(inEurope).sort((a, b) => a.lon! - b.lon! || a.n - b.n);
+  const rowY = my + 10, step = 11.5;
+  const cx0 = P(12, 0)[0] - ((eu.length - 1) * step) / 2;
+  const callout = new Map<number, [number, number]>();
+  eu.forEach((s, i) => callout.set(s.n, [cx0 + i * step, rowY]));
+  for (const s of eu) {
+    const [px, py] = P(s.lon!, s.lat!), [qx, qy] = callout.get(s.n)!;
+    cv.line([[qx, qy + 4], [px, py]], 0.6, mix(C.ink, C.paper, 0.35));
+    cv.circle(px, py, 1.6, regionColor(s.region));
+  }
   for (const s of pinned) {
-    const [px, py] = P(s.lon!, s.lat!);
-    const r = s.n <= 3 ? 6.2 : s.n <= 13 ? 5.2 : 4.4;
+    const [px, py] = callout.get(s.n) ?? P(s.lon!, s.lat!);
+    const r = callout.has(s.n) ? 5.2 : s.n <= 3 ? 6.2 : s.n <= 13 ? 5.2 : 4.4;
     cv.circle(px, py, r + 1, C.paper);
     numDot(s.n, px, py, r, regionColor(s.region));
   }
+  drawText(cv, T(sansK, 6.5, C.soft, 0.6), 'EUROPE', cx0 - 8, rowY + 2.5, 'r');
   drawText(cv, T(sans, 7.6, C.mute), 'Each pin carries the number of its story on this page; colour = region.', M, my + mh + 10);
 
   // also list

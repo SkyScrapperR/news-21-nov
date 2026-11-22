@@ -170,6 +170,95 @@ export class Canvas {
     for (let i = 0; i < steps; i++) this.rect(x, y + i, w, Math.min(1, h - i), mix(top, bot, steps > 1 ? i / (steps - 1) : 0));
   }
 
+  // 8-bit RGB bytes of the canvas.
+  bytes(): Uint8Array {
+    const n = this.w * this.h * 3, out = new Uint8Array(n);
+    for (let i = 0; i < n; i++) { const v = Math.round(this.px[i]); out[i] = v < 0 ? 0 : v > 255 ? 255 : v; }
+    return out;
+  }
+
+  // Indexed PNG: median-cut palette of up to `colors` entries over a 5-bit histogram, nearest-colour mapping.
+  pngIndexed(colors = 256): Buffer {
+    const { w, h } = this;
+    const rgb = this.bytes();
+    const N = w * h;
+    const hist = new Uint32Array(32768);
+    const sum = new Float64Array(32768 * 3);
+    for (let i = 0; i < N; i++) {
+      const r = rgb[i * 3], g = rgb[i * 3 + 1], b = rgb[i * 3 + 2];
+      const k = ((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3);
+      hist[k]++; sum[k * 3] += r; sum[k * 3 + 1] += g; sum[k * 3 + 2] += b;
+    }
+    type Bin = { k: number; c: [number, number, number]; n: number };
+    const bins: Bin[] = [];
+    for (let k = 0; k < 32768; k++) if (hist[k]) bins.push({ k, n: hist[k], c: [sum[k * 3] / hist[k], sum[k * 3 + 1] / hist[k], sum[k * 3 + 2] / hist[k]] });
+    let boxes: Bin[][] = [bins];
+    // split the box with the largest total squared error, along its axis of largest variance
+    const score = (b: Bin[]) => {
+      let n = 0; const m = [0, 0, 0];
+      for (const x of b) { n += x.n; for (let c = 0; c < 3; c++) m[c] += x.c[c] * x.n; }
+      for (let c = 0; c < 3; c++) m[c] /= n;
+      const v = [0, 0, 0];
+      for (const x of b) for (let c = 0; c < 3; c++) v[c] += x.n * (x.c[c] - m[c]) ** 2;
+      const axis = v.indexOf(Math.max(...v));
+      return { axis, s: v[0] + v[1] + v[2] };
+    };
+    while (boxes.length < colors) {
+      let bi = -1, best = -1, ax = 0;
+      boxes.forEach((b, i) => { if (b.length < 2) return; const sc = score(b); if (sc.s > best) { best = sc.s; bi = i; ax = sc.axis; } });
+      if (bi < 0) break;
+      const b = boxes[bi].slice().sort((p, q) => p.c[ax] - q.c[ax] || p.k - q.k);
+      // optimal cut: minimise SSE(left) + SSE(right) using prefix sums of n, n·c and n·|c|²
+      const L = b.length;
+      const pn = new Float64Array(L + 1), ps = new Float64Array((L + 1) * 3), pq = new Float64Array(L + 1);
+      for (let i = 0; i < L; i++) {
+        const x = b[i];
+        pn[i + 1] = pn[i] + x.n;
+        for (let c = 0; c < 3; c++) ps[(i + 1) * 3 + c] = ps[i * 3 + c] + x.n * x.c[c];
+        pq[i + 1] = pq[i] + x.n * (x.c[0] ** 2 + x.c[1] ** 2 + x.c[2] ** 2);
+      }
+      const sse = (i0: number, i1: number) => {
+        const n = pn[i1] - pn[i0];
+        let s2 = 0;
+        for (let c = 0; c < 3; c++) { const s = ps[i1 * 3 + c] - ps[i0 * 3 + c]; s2 += s * s; }
+        return pq[i1] - pq[i0] - s2 / n;
+      };
+      let cut = 1, bestCut = Infinity;
+      for (let i = 1; i < L; i++) { const e = sse(0, i) + sse(i, L); if (e < bestCut) { bestCut = e; cut = i; } }
+      boxes.splice(bi, 1, b.slice(0, cut), b.slice(cut));
+    }
+    const pal: number[][] = boxes.map((b) => {
+      let r = 0, g = 0, bl = 0, n = 0;
+      for (const x of b) { r += x.c[0] * x.n; g += x.c[1] * x.n; bl += x.c[2] * x.n; n += x.n; }
+      return [Math.round(r / n), Math.round(g / n), Math.round(bl / n)];
+    });
+    const cache = new Int16Array(32768).fill(-1);
+    const near = (r: number, g: number, b: number) => {
+      let bi = 0, bd = Infinity;
+      for (let i = 0; i < pal.length; i++) {
+        const dr = pal[i][0] - r, dg = pal[i][1] - g, db = pal[i][2] - b;
+        const d = 2 * dr * dr + 4 * dg * dg + 3 * db * db;
+        if (d < bd) { bd = d; bi = i; }
+      }
+      return bi;
+    };
+    const raw = Buffer.alloc((w + 1) * h);
+    for (let y = 0; y < h; y++) {
+      raw[y * (w + 1)] = 0;
+      for (let x = 0; x < w; x++) {
+        const i = y * w + x;
+        const r = rgb[i * 3], g = rgb[i * 3 + 1], b = rgb[i * 3 + 2];
+        const k = ((r >> 3) << 10) | ((g >> 3) << 5) | (b >> 3);
+        let p = cache[k];
+        if (p < 0) { p = near(r, g, b); cache[k] = p; }
+        raw[y * (w + 1) + 1 + x] = p;
+      }
+    }
+    const plte = Buffer.alloc(pal.length * 3);
+    pal.forEach((c, i) => { plte[i * 3] = c[0]; plte[i * 3 + 1] = c[1]; plte[i * 3 + 2] = c[2]; });
+    return encodePng(w, h, 3, raw, plte);
+  }
+
   png(): Buffer {
     const { w, h, px } = this;
     const raw = Buffer.alloc((w * 3 + 1) * h);

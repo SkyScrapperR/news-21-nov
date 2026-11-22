@@ -98,8 +98,7 @@ let y = 134;
   }
   const slot = (ax1 - ax0) / TIMELINE.length;
   TIMELINE.forEach((e, i) => {
-    const [hh, mm] = e.t.split(':').map(Number);
-    const x = ax0 + ((ax1 - ax0) * (hh + mm / 60)) / 24;
+    const x = ax0 + ((ax1 - ax0) * e.h) / 24;
     const col = regionColor(e.region);
     cv.circle(x, ay, 4, col);
     const lx = ax0 + slot * i + 2;
@@ -143,7 +142,7 @@ let y = 134;
 
 // ---------------------------------------------------------------- 5. heroes
 {
-  const gap = 12, hw = (W - 2 * M - 2 * gap) / 3, ah = 122;
+  const gap = 12, hw = (W - 2 * M - 2 * gap) / 3, ah = 112;
   HEROES.forEach((s, i) => {
     const x = M + i * (hw + gap);
     cv.setClip(x, y, hw, ah);
@@ -169,15 +168,15 @@ let y = 134;
     const hs = T(serif, 19.5, C.ink);
     const nl = lines(hs, s.head, x, ty, hw, 2, 21);
     ty += (nl - 1) * 21 + 15;
-    lines(T(sans, 10.6, C.soft), s.sum, x, ty, hw, 2, 12.6);
+    lines(T(sans, 10.6, C.soft), s.sum, x, ty, hw, 3, 12.4);
   });
-  y += ah + 104;
+  y += ah + 112;
 }
 
 // ---------------------------------------------------------------- 6. tiles
 {
   cv.hline(M, W - M, y - 4, 1, C.ink);
-  const cols = 5, gap = 10, tw = (W - 2 * M - (cols - 1) * gap) / cols, ah = 58, th = 132;
+  const cols = 5, gap = 10, tw = (W - 2 * M - (cols - 1) * gap) / cols, ah = 58, th = 126;
   TILES.forEach((s, i) => {
     const x = M + (i % cols) * (tw + gap), ty0 = y + 4 + Math.floor(i / cols) * (th + 6);
     cv.setClip(x, ty0, tw, ah);
@@ -199,7 +198,7 @@ let y = 134;
 {
   cv.hline(M, W - M, y, 1.6, C.ink);
   y += 4;
-  const mw = 318, mh = 168;
+  const mw = 318, mh = 156;
   drawText(cv, T(sansK, 9, C.ink, 1), 'WHERE IT HAPPENED', M, y + 10);
   const my = y + 15;
   cv.rect(M, my, mw, mh, hex('#dfe6e4'));
@@ -234,9 +233,13 @@ let y = 134;
     const pw = drawText(cv, ps, s.place, x + 16, by);
     const ss = T(sans, 9, C.ink);
     const src = ` (${s.src})`;
-    const room = colw - 16 - pw - 4 - measure(T(sans, 8, C.mute), src);
-    let t = s.head;
-    const st = { ...ss, size: fitSize(ss, t, room, 9, 7.6) };
+    // badge mark: a small square with the badge's initial, right-aligned in the column
+    const bc = BADGE[s.badge].c;
+    cv.rrect(x + colw - 9, by - 7.6, 9, 9, 1.5, bc);
+    drawText(cv, T(sansK, 6.6, C.paper), s.badge, x + colw - 4.5, by - 0.8, 'c');
+    const room = colw - 16 - pw - 4 - measure(T(sans, 8, C.mute), src) - 12;
+    const t = s.head;
+    const st = { ...ss, size: fitSize(ss, t, room, 9, 7.4) };
     drawText(cv, st, t, x + 16 + pw + 4, by);
     drawText(cv, T(sans, 8, C.mute), src, x + 16 + pw + 4 + measure(st, t), by);
   });
@@ -245,7 +248,7 @@ let y = 134;
 
 // ---------------------------------------------------------------- 8. date check, legend, corrections, footer
 {
-  const h = 44;
+  const h = 40;
   cv.strokeRect(M, y, W - 2 * M, h, 1.6, C.red);
   drawText(cv, T(sansK, 9.5, C.red, 0.8), 'DATE CHECK', M + 8, y + 14);
   const st = T(sans, 8.8, C.ink);
@@ -255,7 +258,7 @@ let y = 134;
   for (const [k, v] of parts) {
     const kw = drawText(cv, T(sansK, 8.8, C.ink), k, x0, ty);
     lines(st, v, x0 + kw, ty, W - 2 * M - 92 - kw, 2, 10.5);
-    ty += 21;
+    ty += 20;
   }
   y += h + 6;
   let x = M;
@@ -272,4 +275,4 @@ let y = 134;
   drawText(cv, T(sans, 7.8, C.mute), 'All drawings original · type: DM Serif & Lato (OFL)', W - M, y + 24, 'r');
 }
 
-writeFileSync(join(process.env.MAKEFUN_OUTPUT_DIR ?? '/output', 'entry.png'), cv.png());
+writeFileSync(join(process.env.MAKEFUN_OUTPUT_DIR ?? '/output', 'entry.png'), cv.pngIndexed(256));

@@ -162,7 +162,7 @@ const quake: Art = (cv, x, y, w, h) => {
   dashed(cv, [ex, surf - 28], [ex, hy - 10], 1.5, P.white, 4, 3);
   burst(cv, ex, hy, 14, hex('#e8291c'), hex('#ffe08a'));
   cv.circle(ex, surf - 28, 4, hex('#e8291c'));
-  label(cv, 'ONDORES', ex + 8, surf - 31, 9, P.white);
+  label(cv, 'ONDORES', ex + 8, surf - 31, 9, P.ink);
   label(cv, '108–129 km', ex + 20, hy + 4, 10, P.white, hex('#2a1a0f'));
 };
 
@@ -188,16 +188,25 @@ const cop: Art = (cv, x, y, w, h) => {
 
 // ---------------------------------------------------------------- tiles (each: one bold icon + one big key fact)
 const ship: Art = (cv, x, y, w, h) => {
-  cv.vgrad(x, y, w, h, hex('#1d3550'), hex('#2e5878'));
-  const sy = y + h - 14;
-  cv.rect(x, sy, w, 14, hex('#173049'));
-  const sx = x + 10;
-  cv.fill(new Path().poly([sx, sy - 12, sx + 88, sy - 12, sx + 80, sy + 4, sx + 6, sy + 4]), hex('#0b0b0b'));
-  for (let i = 0; i < 4; i++) cv.rect(sx + 14 + i * 14, sy - 21, 12, 9, [hex('#c43b2c'), hex('#2a6f97'), hex('#d4a017'), hex('#4f8a4b')][i]);
-  cv.rect(sx + 72, sy - 26, 12, 14, P.white);
-  for (let i = 0; i < 4; i++) cv.circle(sx + 30 + i * 6, sy - 30 - i * 5, 5 + i, hex('#6b6b6b'), 0.6);
-  burst(cv, sx + 28, sy - 22, 9, hex('#ff7a1a'), hex('#ffe08a'), 12);
-  keyFact(cv, '2', 'DRONES', x + w - 8, y + 30, P.white, hex('#ffb14a'), 30, hex('#132a42'));
+  cv.vgrad(x, y, w, h, hex('#0e2236'), hex('#1d4466'));
+  const sy = y + h - 13;
+  cv.rect(x, sy, w, 13, hex('#0a1826'));
+  // freighter: black hull with a red waterline, bold container stacks, bridge
+  const sx = x + 6;
+  cv.fill(new Path().poly([sx, sy - 14, sx + 104, sy - 14, sx + 94, sy + 3, sx + 8, sy + 3]), hex('#0b0b0b'));
+  cv.rect(sx + 7, sy - 1, 86, 3, hex('#c0211a'));
+  const cols = [hex('#e0482f'), hex('#2f8fd6'), hex('#f2b81c'), hex('#3fae5a'), hex('#e0482f')];
+  for (let i = 0; i < 5; i++) cv.rect(sx + 12 + i * 14, sy - 25, 12.5, 11, cols[i]);
+  cv.rect(sx + 84, sy - 32, 14, 18, hex('#f4f4f0')); cv.rect(sx + 87, sy - 29, 8, 4, hex('#0b0b0b'));
+  for (let i = 0; i < 4; i++) cv.circle(sx + 36 + i * 6, sy - 32 - i * 5, 5 + i * 1.3, hex('#5d6670'), 0.75);
+  burst(cv, sx + 36, sy - 25, 13, hex('#ff6a1a'), hex('#ffe08a'), 14);
+  // two quadcopters and their dashed run-in
+  for (const [dx, dy] of [[x + 112, y + 12], [x + 128, y + 26]] as Pt[]) {
+    cv.line([[dx - 7, dy - 5], [dx + 7, dy + 5]], 2.2, P.white); cv.line([[dx - 7, dy + 5], [dx + 7, dy - 5]], 2.2, P.white);
+    for (const [ox, oy] of [[-7, -5], [7, 5], [-7, 5], [7, -5]]) cv.circle(dx + ox, dy + oy, 2.6, P.white);
+  }
+  dashed(cv, [x + 108, y + 20], [sx + 44, sy - 30], 1.6, hex('#ff6a1a'), 4, 3, 6);
+  keyFact(cv, '2', 'DRONES', x + w - 8, y + 30, P.white, hex('#ffb14a'), 32, hex('#0e2236'));
 };
 const robot: Art = (cv, x, y, w, h) => {
   cv.vgrad(x, y, w, h, hex('#2c4a6e'), hex('#203852'));
@@ -223,14 +232,16 @@ const wanted: Art = (cv, x, y, w, h) => {
   text(cv, fK, 8, P.ink, 'FBI TOP TEN', sx + (w - 74) / 2, sy + 36, 'c', 0.4);
 };
 const trade: Art = (cv, x, y, w, h) => {
-  cv.vgrad(x, y, w, h, hex('#e9eff6'), hex('#ccdbea'));
+  cv.vgrad(x, y, w, h, hex('#173d78'), hex('#0f2b57'));
+  // EU ring of stars and Indonesia's red-and-white, joined by a two-way arrow
   const sx = x + 24, sy = y + h / 2;
-  cv.circle(sx, sy, 19, hex('#1f4e9a'));
-  for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; cv.circle(sx + Math.cos(a) * 12.5, sy + Math.sin(a) * 12.5, 1.9, hex('#f2c230')); }
-  const fx = x + 48;
-  cv.rect(fx, sy - 13, 30, 13, hex('#d0281c')); cv.rect(fx, sy, 30, 13, P.white); cv.strokeRect(fx, sy - 13, 30, 26, 0.8, P.ink);
-  keyFact(cv, '90.4%', 'DUTY-FREE LINES', x + w - 8, y + 30, hex('#1f4e9a'), P.ink, 26);
-  cv.rect(x + 86, y + 48, w - 94, 6, P.white); cv.rect(x + 86, y + 48, (w - 94) * 0.904, 6, hex('#2a87b8'));
+  cv.circle(sx, sy, 20, P.white); cv.circle(sx, sy, 18, hex('#1f4e9a'));
+  for (let i = 0; i < 12; i++) { const a = (i / 12) * Math.PI * 2; cv.circle(sx + Math.cos(a) * 12, sy + Math.sin(a) * 12, 2.2, hex('#ffcc33')); }
+  const fx = x + 58, fw = 32, fh = 24;
+  cv.rect(fx - 2, sy - fh / 2 - 2, fw + 4, fh + 4, P.white);
+  cv.rect(fx, sy - fh / 2, fw, fh / 2, hex('#e0201b')); cv.rect(fx, sy, fw, fh / 2, hex('#f7f7f2'));
+  arrow(cv, [x + 46, sy - 4], [x + 54, sy - 4], 2, P.white, 5); arrow(cv, [x + 54, sy + 4], [x + 46, sy + 4], 2, P.white, 5);
+  keyFact(cv, '90.4%', 'DUTY-FREE LINES', x + w - 8, y + 30, P.white, hex('#ffcc33'), 27);
 };
 const plant: Art = (cv, x, y, w, h) => {
   cv.vgrad(x, y, w, h, hex('#2b2930'), hex('#5a3a2c'));
@@ -279,13 +290,14 @@ const ballot: Art = (cv, x, y, w, h) => {
   keyFact(cv, '54/54', 'BACK INFANTINO', x + w - 8, y + 30, P.white, hex('#bfe8cf'), 24);
 };
 const peaks: Art = (cv, x, y, w, h) => {
-  cv.vgrad(x, y, w, h, hex('#f1d6ae'), hex('#e0b27a'));
-  cv.fill(new Path().poly([x, y + h, x + 22, y + 26, x + 44, y + 40, x + 70, y + 14, x + 98, y + 42, x + 124, y + 30, x + w, y + 46, x + w, y + h]), hex('#9a6a44'));
-  cv.fill(new Path().poly([x, y + h, x + 36, y + 44, x + 66, y + 52, x + 98, y + 40, x + 140, y + 54, x + w, y + 50, x + w, y + h]), hex('#6e4a2e'));
-  const cx = x + 58, cy = y + 32;
-  cv.line(new Path().circle(cx, cy, 11).polys[0], 2, hex('#c0211a'), 1, true);
-  for (const [a, b] of [[[cx - 17, cy], [cx - 6, cy]], [[cx + 6, cy], [cx + 17, cy]], [[cx, cy - 17], [cx, cy - 6]], [[cx, cy + 6], [cx, cy + 17]]] as Pt[][]) cv.line([a, b], 1.8, hex('#c0211a'));
-  keyFact(cv, '15', 'MILITANTS KILLED', x + w - 8, y + 30, P.ink, P.white, 30, hex('#5a3a22'));
+  cv.vgrad(x, y, w, h, hex('#f0a24c'), hex('#c4572a'));
+  cv.fill(new Path().poly([x, y + h, x + 20, y + 26, x + 42, y + 38, x + 68, y + 12, x + 96, y + 40, x + 122, y + 28, x + w, y + 44, x + w, y + h]), hex('#5a3420'));
+  cv.fill(new Path().poly([x, y + h, x + 34, y + 42, x + 64, y + 50, x + 96, y + 38, x + 138, y + 52, x + w, y + 48, x + w, y + h]), hex('#2e1a0f'));
+  const cx = x + 58, cy = y + 30;
+  cv.line(new Path().circle(cx, cy, 12).polys[0], 2.6, P.white, 1, true);
+  for (const [a, b] of [[[cx - 19, cy], [cx - 6, cy]], [[cx + 6, cy], [cx + 19, cy]], [[cx, cy - 19], [cx, cy - 6]], [[cx, cy + 6], [cx, cy + 19]]] as Pt[][]) cv.line([a, b], 2.4, P.white);
+  cv.circle(cx, cy, 3, hex('#e8291c'));
+  keyFact(cv, '15', 'MILITANTS KILLED', x + w - 8, y + 30, P.white, P.white, 32, hex('#2e1a0f'));
 };
 const f1: Art = (cv, x, y, w, h) => {
   cv.vgrad(x, y, w, h, hex('#17152a'), hex('#33295a'));

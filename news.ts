@@ -12,13 +12,13 @@ export const DAY = 'Saturday 21 November 2026';
 // colour-blind-aware categorical palette (hues also separated by lightness)
 export const REGIONS = [
   { k: 'EU', name: 'Europe', c: '#1f5fa8' },
-  { k: 'ME', name: 'Middle East', c: '#c4501b' },
+  { k: 'ME', name: 'Middle East', c: '#b04414' },
   { k: 'AF', name: 'Africa', c: '#1d7f52' },
-  { k: 'SA', name: 'South Asia', c: '#a87400' },
+  { k: 'SA', name: 'South Asia', c: '#8a5f00' },
   { k: 'EA', name: 'East Asia', c: '#a8457f' },
-  { k: 'SEA', name: 'SE Asia', c: '#2a87b8' },
+  { k: 'SEA', name: 'SE Asia', c: '#1f6f9a' },
   { k: 'AM', name: 'Americas', c: '#6a3d9a' },
-  { k: 'OC', name: 'Oceania', c: '#2e8b7a' },
+  { k: 'OC', name: 'Oceania', c: '#23705f' },
   { k: 'GL', name: 'Global', c: '#57534a' },
 ];
 
@@ -72,8 +72,8 @@ export const TILES: Story[] = [
 export const BRIEFS: Story[] = [
   { n: 14, place: 'Gaza City', region: 'ME', head: 'Drone strike on food-aid van kills three', src: 'AJ, Reuters', badge: 'C', lon: 34.45, lat: 31.5 },
   { n: 15, place: 'Hormuz', region: 'ME', head: 'IRGC says it downed a US MQ-9; no US comment', src: 'AJ, Reuters', badge: 'R', lon: 56.3, lat: 26.6 },
-  { n: 16, place: 'Tehran', region: 'ME', head: 'Iran recalls 168 killed in US strike on a school', src: 'Anadolu', badge: 'R', lon: 51.4, lat: 35.7 },
-  { n: 17, place: 'Paris', region: 'EU', head: '82,500 march on living costs; Lisbon too', src: 'AJ, ministry', badge: 'O', lon: 2.35, lat: 48.85 },
+  { n: 16, place: 'Finland', region: 'EU', head: 'Russian helicopter strays 4 km into airspace', src: 'AJ, Finnish MoD', badge: 'R', lon: 26.2, lat: 60.4 },
+  { n: 17, place: 'Paris', region: 'EU', head: '82,500 march on living costs, ministry says', src: 'AJ', badge: 'O', lon: 2.35, lat: 48.85 },
   { n: 18, place: 'Zagreb', region: 'EU', head: 'Thousands protest over hospital death', src: 'AJ', badge: 'R', lon: 16.0, lat: 45.8 },
   { n: 19, place: 'Pas-de-Calais', region: 'EU', head: 'Floods swamp 850 homes; 85 roads shut', src: 'Anadolu', badge: 'O', lon: 2.3, lat: 50.6 },
   { n: 20, place: 'Newcastle', region: 'EU', head: 'Arsenal held 2-2; Chelsea lose 4-1 to Leeds', src: 'AJ', badge: 'O', lon: -1.6, lat: 55.0 },
@@ -83,11 +83,11 @@ export const BRIEFS: Story[] = [
   { n: 24, place: 'Cleveland', region: 'AM', head: 'Harden passes Bryant on NBA 50-point list', src: 'AP, AJ', badge: 'O', lon: -81.7, lat: 41.5 },
   { n: 25, place: 'Melbourne', region: 'OC', head: 'Cricket Australia backs Cummins as captain', src: 'AFP', badge: 'O', lon: 145.0, lat: -37.8 },
   { n: 26, place: 'Melbourne', region: 'OC', head: 'Australia beat England by 3 wickets in T20', src: 'AJ', badge: 'O', lon: 147.5, lat: -35.0 },
-  { n: 27, place: 'Doha', region: 'AF', head: 'Cameroon lose U17 World Cup opener 2-1', src: 'Africanews', badge: 'O', lon: 51.5, lat: 25.3 },
-  { n: 28, place: 'Blue Nile', region: 'AF', head: 'Sudan army says it is restoring security', src: 'Anadolu', badge: 'R', lon: 34.4, lat: 11.8 },
-  { n: 29, place: 'S. Ethiopia', region: 'AF', head: 'About 700,000 displaced by conflict', src: 'Africanews', badge: 'R', lon: 38.0, lat: 6.0 },
-  { n: 30, place: 'Dhaka', region: 'SA', head: 'Five more deaths with measles symptoms', src: 'Daily Star', badge: 'R', lon: 90.4, lat: 23.8 },
-  { n: 31, place: 'New Delhi', region: 'SA', head: 'Congress vows more protests against Meta', src: 'Dawn', badge: 'R', lon: 77.2, lat: 28.6 },
+  { n: 27, place: 'Doha', region: 'AF', head: 'U17 World Cup: Cameroon lose, Tanzania draw', src: 'Africanews', badge: 'O', lon: 51.5, lat: 25.3 },
+  { n: 28, place: 'Abuja', region: 'AF', head: 'Infantino pledges $25m to each CAF member', src: 'AJ, AFP', badge: 'O', lon: 8.9, lat: 7.6 },
+  { n: 29, place: 'Lisbon', region: 'EU', head: 'Thousands march in rain over living costs', src: 'AJ', badge: 'R', lon: -9.1, lat: 38.7 },
+  { n: 30, place: 'India v NZ', region: 'SA', head: 'India 486-4 on day 3, lead by 118 runs', src: 'Dawn', badge: 'O', lon: 80.0, lat: 20.5 },
+  { n: 31, place: 'New Delhi', region: 'SA', head: 'Congress youth wing vows more Meta protests', src: 'Dawn, Reuters', badge: 'C', lon: 77.2, lat: 28.6 },
   { n: 32, place: 'SCO forum', region: 'SA', head: 'Pakistan minister calls climate an enemy', src: 'Dawn', badge: 'R', lon: 78.8, lat: 26.8 },
   { n: 33, place: 'Lahore', region: 'SA', head: 'Pakistan drop Rizwan, Masood from contracts', src: 'AJ', badge: 'O', lon: 74.3, lat: 31.5 },
   { n: 34, place: 'Fukushima', region: 'EA', head: 'Snow strands ~1,500; 700 homes lose power', src: 'Kyodo', badge: 'R', lon: 140.0, lat: 37.6 },
@@ -105,17 +105,15 @@ export const NUMBERS = [
 
 // UTC times as stated by outlets or schedules; '≈' marks a report time, not an event time.
 export const TIMELINE = [
-  { t: '00:09', h: 0.15, label: 'Peru quake', sub: 'M6.7, Junín (USGS)', region: 'AM' },
-  { t: '02:15', h: 2.25, label: 'Finland', sub: 'restricts Gulf airspace', region: 'EU' },
-  { t: '04:00', h: 4.0, label: 'Las Vegas', sub: 'qualifying: Verstappen P1', region: 'AM' },
-  { t: '05:00', h: 5.0, label: 'Tanker hit', sub: '11 nm N of Khasab', region: 'ME' },
-  { t: '05:50', h: 5.83, label: '2nd tanker', sub: '17 nm E (UKMTO)', region: 'ME' },
-  { t: '≈15:30', h: 15.5, label: 'Antara', sub: 'reports EU pact signed', region: 'SEA' },
-  { t: '17:30', h: 17.5, label: 'Newcastle', sub: 'v Arsenal kicks off: 2-2', region: 'EU' },
+  { t: '00:09', h: 0.15, label: 'Peru quake', sub: 'M6.7 in Junín (USGS)', region: 'AM' },
+  { t: '02:15', h: 2.25, label: 'Finland', sub: 'closes Gulf airspace', region: 'EU' },
+  { t: '04:00', h: 4.0, label: 'Las Vegas', sub: 'Verstappen on pole', region: 'AM' },
+  { t: '05:00', h: 5.0, label: 'Hormuz', sub: '2 tankers hit by 05:50', region: 'ME' },
+  { t: '17:30', h: 17.5, label: 'Newcastle', sub: 'v Arsenal ends 2-2', region: 'EU' },
 ];
 
 export const DATECHECK = {
-  left: 'Kyiv bridge barrage and missiles in Poland, the Kryvyi Rih strike, Kane’s injury, the Tocumwal lightning, Denmark’s expulsion of a Russian attaché, the EU–UK summit, the Riemann proof claim, Manipur’s alcohol toll and the TAIEX’s 6% fall were all Friday 20 November (UTC).',
+  left: 'Kyiv bridge barrage, missiles in Poland, the Kryvyi Rih strike, Kane’s injury, Phumzile Mlambo-Ngcuka’s death, Denmark’s expulsion of a Russian attaché, the EU–UK summit, the Riemann proof claim, Iran’s UN statement on the Minab school, Sudan’s Blue Nile statement and Bangladesh’s measles count: all Friday 20 Nov (UTC).',
   future: 'COP31 approval session (Sun 06:00 GMT), Las Vegas GP race (Sun 04:00 UTC), Liverpool v Man United (Sun). Unconfirmed when drawn, so not shown: the Copa Sudamericana final score.',
 };
 export const CORRECTIONS = 'Corrections: none. Peru quake depth differs by agency: USGS 108 km, IGP 129 km.';

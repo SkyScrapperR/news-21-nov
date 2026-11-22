@@ -13,7 +13,7 @@ const disp = F('DMSerifDisplay-Regular.ttf'), serif = F('DMSerifText-Regular.ttf
 const sans = F('Lato-Regular.ttf'), sansB = F('Lato-Bold.ttf'), sansK = F('Lato-Black.ttf');
 
 export const C = {
-  paper: hex('#f7f2e6'), ink: hex('#151411'), soft: hex('#45423b'), mute: hex('#7d786b'), rule: hex('#cfc7b2'),
+  paper: hex('#f7f2e6'), ink: hex('#151411'), soft: hex('#45423b'), mute: hex('#625d53'), rule: hex('#cfc7b2'),
   red: hex('#b4231b'), panel: hex('#ece4cf'),
 };
 const BADGE: Record<Badge, { t: string; c: RGB }> = {
@@ -104,7 +104,7 @@ drawText(cv, { font: serif, size: 16.5, color: C.ink, skew: 0.16 }, HEROES.map((
 // ---------------------------------------------------------------- 2. the day in UTC
 let y = 138;
 {
-  const h = 38;
+  const h = 40;
   cv.rect(M, y, W - 2 * M, h, C.panel);
   cv.rect(M, y, 78, h, C.ink);
   drawText(cv, T(sansK, 9.2, C.paper, 0.8), 'THE DAY', M + 39, y + 16, 'c');
@@ -122,13 +122,13 @@ let y = 138;
     const col = regionColor(e.region);
     const lx = ax0 + slot * i + 2;
     cv.line([[x, ay], [lx + 3, ay + 7]], 0.8, col);
-    cv.circle(x, ay, 3.6, col);
-    const ts = T(sansK, 9, col);
-    drawText(cv, ts, e.t, lx, ay + 16);
-    drawText(cv, T(sansK, 8.6, C.ink), e.label, lx + measure(ts, e.t) + 4, ay + 16);
-    drawText(cv, T(sans, 8, C.soft), e.sub, lx, ay + 25.5);
+    cv.circle(x, ay, 4.4, col);
+    const ts = T(sansK, 11.5, col);
+    drawText(cv, ts, e.t, lx, ay + 17.5);
+    drawText(cv, T(sansK, 11, C.ink), e.label, lx + measure(ts, e.t) + 5, ay + 17.5);
+    drawText(cv, T(sansB, 9.6, C.soft), e.sub, lx, ay + 28);
   });
-  y += h + 5;
+  y += h + 6;
 }
 
 // ---------------------------------------------------------------- 3. numbers strip
@@ -142,7 +142,7 @@ let y = 138;
     const cs = T(sansB, 8.8, C.soft);
     drawText(cv, { ...cs, size: fitSize(cs, k.cap, cw - 18, 8.8, 7.2) }, k.cap, x + 12, y + 39);
   });
-  y += h + 5;
+  y += h + 6;
 }
 
 // ---------------------------------------------------------------- 4. region bar
@@ -226,12 +226,13 @@ const footTop = H - 74;
   drawText(cv, T(sansK, 9.2, C.ink, 1), 'WHERE IT HAPPENED', M, y + 10);
   const my = y + 16, mh = footTop - 22 - my;
   cv.rect(M, my, mw, mh, hex('#d3e0e3'));
-  const lon0 = -170, lon1 = 190, lat0 = 76, lat1 = -50;
+  const lon0 = -128, lon1 = 160, lat0 = 72, lat1 = -46;
   const P = (lon: number, lat: number): [number, number] => [M + ((lon - lon0) / (lon1 - lon0)) * mw, my + ((lat0 - lat) / (lat0 - lat1)) * mh];
   cv.setClip(M, my, mw, mh);
   const land = new Path();
   for (const poly of LAND) { land.moveTo(...P(poly[0], poly[1])); for (let i = 2; i < poly.length; i += 2) land.lineTo(...P(poly[i], poly[i + 1])); land.close(); }
-  cv.fill(land, hex('#bba373'));
+  cv.fill(land, hex('#c2ab7c'));
+  for (const poly of LAND) { const pts: [number, number][] = []; for (let i = 0; i < poly.length; i += 2) pts.push(P(poly[i], poly[i + 1])); cv.line(pts, 0.7, hex('#7a6340'), 1, true); }
   for (const poly of WATER) { const w = new Path(); w.moveTo(...P(poly[0], poly[1])); for (let i = 2; i < poly.length; i += 2) w.lineTo(...P(poly[i], poly[i + 1])); cv.fill(w.close(), hex('#d3e0e3')); }
   cv.noClip();
   const pinned = [...BRIEFS, ...TILES, ...HEROES].filter((s) => s.lon !== undefined);
@@ -247,9 +248,31 @@ const footTop = H - 74;
     cv.line([[qx, qy + 4], [px, py]], 0.6, mix(C.ink, C.paper, 0.35));
     cv.circle(px, py, 1.6, regionColor(s.region));
   }
+  // other crowded pins: a deterministic repulsion pass, with a leader line back to the true spot when a pin moved
+  const rad = (s: Story) => (callout.has(s.n) ? 5.6 : s.n <= 3 ? 7.2 : s.n <= 13 ? 6 : 5);
+  const free = pinned.filter((s) => !callout.has(s.n)).sort((p, q) => p.n - q.n);
+  const pos = new Map<number, [number, number]>(free.map((s) => [s.n, P(s.lon!, s.lat!)]));
+  for (let it = 0; it < 80; it++) {
+    for (let i = 0; i < free.length; i++) for (let j = i + 1; j < free.length; j++) {
+      const a = pos.get(free[i].n)!, b = pos.get(free[j].n)!;
+      let dx = b[0] - a[0], dy = b[1] - a[1];
+      let d = Math.hypot(dx, dy);
+      const need = rad(free[i]) + rad(free[j]) + 1.5;
+      if (d >= need) continue;
+      if (d < 0.01) { dx = 1; dy = 0.3; d = Math.hypot(dx, dy); }
+      const push = (need - d) / 2, ux = dx / d, uy = dy / d;
+      // the lower-numbered (bigger) story moves less
+      a[0] -= ux * push * 0.6; a[1] -= uy * push * 0.6; b[0] += ux * push * 1.4; b[1] += uy * push * 1.4;
+    }
+    for (const s of free) { const p = pos.get(s.n)!; const r = rad(s); p[0] = Math.min(M + mw - r - 1, Math.max(M + r + 1, p[0])); p[1] = Math.min(my + mh - r - 1, Math.max(my + r + 1, p[1])); }
+  }
+  for (const s of free) {
+    const [tx, ty] = P(s.lon!, s.lat!), [px, py] = pos.get(s.n)!;
+    if (Math.hypot(px - tx, py - ty) > 2.5) { cv.line([[px, py], [tx, ty]], 0.7, mix(C.ink, C.paper, 0.3)); cv.circle(tx, ty, 1.6, regionColor(s.region)); }
+  }
   for (const s of pinned) {
-    const [px, py] = callout.get(s.n) ?? P(s.lon!, s.lat!);
-    const r = callout.has(s.n) ? 5.6 : s.n <= 3 ? 7.2 : s.n <= 13 ? 6 : 5;
+    const [px, py] = callout.get(s.n) ?? pos.get(s.n)!;
+    const r = rad(s);
     cv.circle(px, py, r + 1, C.paper);
     numDot(s.n, px, py, r, regionColor(s.region));
   }
@@ -312,4 +335,4 @@ const footTop = H - 74;
 }
 
 if (truncated) process.stderr.write(`${truncated} text item(s) did not fit\n`);
-writeFileSync(join(process.env.MAKEFUN_OUTPUT_DIR ?? '/output', 'entry.png'), cv.pngIndexed(112));
+writeFileSync(join(process.env.MAKEFUN_OUTPUT_DIR ?? '/output', 'entry.png'), cv.pngIndexed(100));

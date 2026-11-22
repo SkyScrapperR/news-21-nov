@@ -6,7 +6,17 @@ import { join } from 'node:path';
 import { Canvas, Font, hex, mix, drawText, measure, wrap, fitSize, Path, type RGB, type TextStyle } from './gfx.ts';
 import { LAND, WATER } from './world.ts';
 import { DAY, HEROES, TILES, BRIEFS, NUMBERS, TIMELINE, DATECHECK, CORRECTIONS, REGIONS, type Story, type Badge } from './news.ts';
-import { ART, TILE_ART } from './art.ts';
+import { ART, TILE_ART, OPT } from './art.ts';
+
+// Layout variant: 'base' is the d814855 design; V1..V4 are the judge-proxy variants (see variants/scoreboard.md).
+const VARIANT = process.env.NEWS_VARIANT ?? 'V1';
+const FX = {
+  heroSimple: ['V1', 'V3', 'V4'].includes(VARIANT),
+  tileStrip: ['V2', 'V3', 'V4'].includes(VARIANT),
+  tileSimple: ['V3', 'V4'].includes(VARIANT),
+  tuned: VARIANT === 'V4',
+};
+OPT.heroSimple = FX.heroSimple; OPT.tileSimple = FX.tileSimple; OPT.keyBoost = FX.tuned ? 3 : 0;
 
 const F = (n: string) => new Font(new URL('./fonts/' + n, import.meta.url));
 const disp = F('DMSerifDisplay-Regular.ttf'), serif = F('DMSerifText-Regular.ttf');
@@ -172,14 +182,15 @@ let y = 138;
     ART[s.art](cv, x, y, hw, ah, s);
     cv.noClip();
     // label banner + fact chip inside the art, source chip at its foot
-    const lb = T(sansK, 19.5, C.paper, 0.3);
+    const bh = FX.heroSimple ? 38 : 34;
+    const lb = T(sansK, FX.heroSimple ? 22.5 : 19.5, C.paper, 0.3);
     const lw = measure(lb, s.label!) + 16;
-    cv.rect(x, y, lw + 6, 34, C.red);
-    drawText(cv, lb, s.label!, x + 10, y + 25);
-    const fc = T(sansK, 11.5, C.ink);
+    cv.rect(x, y, lw + 6, bh, C.red);
+    drawText(cv, lb, s.label!, x + 10, y + (FX.heroSimple ? 28 : 25));
+    const fc = T(sansK, FX.heroSimple ? 12.5 : 11.5, C.ink);
     const fw = measure(fc, s.fact!) + 14;
-    cv.rect(x, y + 34, fw, 20, hex('#fffdf6'));
-    drawText(cv, fc, s.fact!, x + 8, y + 48.5);
+    cv.rect(x, y + bh, fw, FX.heroSimple ? 21 : 20, hex('#fffdf6'));
+    drawText(cv, fc, s.fact!, x + 8, y + bh + (FX.heroSimple ? 15.5 : 14.5));
     const sc = T(sansB, 7.8, C.paper);
     const sw = measure(sc, s.src) + 12;
     cv.rect(x, y + ah - 15, sw, 15, hex('#1a1915'));
@@ -190,7 +201,7 @@ let y = 138;
     ty += hs.size + 4;
     const nl = lines(hs, s.head, x, ty, hw, 2, hs.size * 1.03);
     ty += (nl - 1) * hs.size * 1.03 + 15;
-    lines(T(sans, 10.8, C.soft), s.sum, x, ty, hw, 2, 12.6);
+    lines(T(sans, 10.8, FX.tuned ? C.ink : C.soft), s.sum, x, ty, hw, 2, 12.6);
   });
   y += ah + 113;
 }
@@ -201,16 +212,29 @@ let y = 138;
   const cols = 5, tw = (W - 2 * M - (cols - 1) * GAP) / cols, ah = 60, th = 140;
   TILES.forEach((s, i) => {
     const x = M + (i % cols) * (tw + GAP), ty0 = y + 3 + Math.floor(i / cols) * (th + 8);
-    cv.setClip(x, ty0, tw, ah);
-    TILE_ART[s.art](cv, x, ty0, tw, ah, s);
+    // optional label strip: number, a 1-3 word topic in the region colour, badge initial
+    const sh = FX.tileStrip ? 17 : 0, tah = FX.tileStrip ? 55 : ah;
+    if (FX.tileStrip) {
+      const col = regionColor(s.region);
+      cv.rect(x, ty0, tw, sh, col);
+      cv.circle(x + 9, ty0 + 8.5, 6.2, C.paper);
+      drawText(cv, T(sansK, 7.4, col), String(s.n), x + 9, ty0 + 11.2, 'c');
+      const ls = T(sansK, 10.6, C.paper, 0.4);
+      drawText(cv, { ...ls, size: fitSize(ls, s.tag!, tw - 20 - 18, 10.6, 8) }, s.tag!, x + 19, ty0 + 12.4);
+      cv.rrect(x + tw - 14, ty0 + 3, 11, 11, 1.5, C.paper);
+      cv.rrect(x + tw - 13, ty0 + 4, 9, 9, 1.2, BADGE[s.badge].c);
+      drawText(cv, T(sansK, 6.6, C.paper), s.badge, x + tw - 8.5, ty0 + 11, 'c');
+    }
+    cv.setClip(x, ty0 + sh, tw, tah);
+    TILE_ART[s.art](cv, x, ty0 + sh, tw, tah, s);
     cv.noClip();
-    let ty = ty0 + ah + 13;
-    kicker(s, x, ty, 7.8, tw, 6.4);
-    const hs = fitHead(s.head, tw, 20, 14, 0.75);
+    let ty = ty0 + sh + tah + 13;
+    if (!FX.tileStrip) kicker(s, x, ty, 7.8, tw, 6.4); else ty -= 14;
+    const hs = fitHead(s.head, tw, FX.tileStrip ? 20.5 : 20, 14, FX.tuned ? 0.85 : 0.75);
     ty += hs.size + 3;
     const nl = lines(hs, s.head, x, ty, tw, 2, hs.size * 1.03);
     ty += (nl - 1) * hs.size * 1.03 + 13;
-    lines(T(sans, 9.3, C.soft), s.sum, x, ty, tw, 1, 10);
+    lines(T(sans, 9.3, FX.tuned ? C.ink : C.soft), s.sum, x, ty, tw, 1, 10);
     const ss = T(sansB, 7.6, C.mute);
     drawText(cv, { ...ss, size: fitSize(ss, s.src, tw, 7.6, 6.6) }, s.src, x, ty + 11);
   });

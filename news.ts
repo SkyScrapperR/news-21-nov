@@ -6,7 +6,7 @@
 export type Badge = 'C' | 'O' | 'R';
 export type Story = {
   n: number; place: string; region: string; cat: string; head: string; sum: string; src: string; badge: Badge;
-  lon?: number; lat?: number; art: string; label?: string; fact?: string; sub?: string;
+  lon?: number; lat?: number; art: string; label?: string; fact?: string; sub?: string; tag?: string;
 };
 export const DAY = 'Saturday 21 November 2026';
 // colour-blind-aware categorical palette (hues also separated by lightness)
@@ -47,25 +47,25 @@ export const HEROES: Story[] = [
 ];
 
 export const TILES: Story[] = [
-  { n: 4, place: 'Gulf of Finland', region: 'EU', cat: 'Security', art: 'ship', badge: 'C', lon: 26.8, lat: 60.0,
+  { n: 4, tag: 'FINLAND: DRONES', place: 'Gulf of Finland', region: 'EU', cat: 'Security', art: 'ship', badge: 'C', lon: 26.8, lat: 60.0,
     head: 'Drones hit Russian ship off Finland', sum: 'Crew evacuated; Finland suspects Ukraine.', src: 'Finnish MoD · Reuters · Anadolu' },
-  { n: 5, place: 'Geneva', region: 'GL', cat: 'Arms control', art: 'robot', badge: 'C', lon: 6.1, lat: 46.2,
+  { n: 5, tag: 'GENEVA: ROBOT ARMS', place: 'Geneva', region: 'GL', cat: 'Arms control', art: 'robot', badge: 'C', lon: 6.1, lat: 46.2,
     head: '128 nations back killer-robot talks', sum: 'US, Russia, Israel opposed binding rules.', src: 'AFP · Anadolu · Al Jazeera' },
-  { n: 6, place: 'Sinaloa, Mexico', region: 'AM', cat: 'Crime', art: 'wanted', badge: 'C', lon: -108.5, lat: 25.6,
-    head: 'Mexico captures cartel boss Chapo Isidro', sum: 'FBI most-wanted; seized in Guasave.', src: 'AP · Al Jazeera · Mexican defence ministry' },
-  { n: 7, place: 'Indonesia–EU', region: 'SEA', cat: 'Trade', art: 'trade', badge: 'O', lon: 106.8, lat: -6.2,
+  { n: 6, tag: 'MEXICO: ARREST', place: 'Sinaloa, Mexico', region: 'AM', cat: 'Crime', art: 'wanted', badge: 'C', lon: -108.5, lat: 25.6,
+    head: 'Mexico captures cartel boss Chapo Isidro', sum: '4 soldiers, 7 gunmen killed in firefight.', src: 'Mexican defence ministry · AP · Al Jazeera' },
+  { n: 7, tag: 'INDONESIA–EU: TRADE', place: 'Indonesia–EU', region: 'SEA', cat: 'Trade', art: 'trade', badge: 'O', lon: 106.8, lat: -6.2,
     head: 'Indonesia and EU sign trade pact', sum: 'Signed in Brussels; in force from 2027.', src: 'Antara · Indonesian government' },
-  { n: 8, place: 'Basra, Iraq', region: 'ME', cat: 'Disaster', art: 'plant', badge: 'C', lon: 47.8, lat: 30.5,
+  { n: 8, tag: 'IRAQ: DEADLY FIRE', place: 'Basra, Iraq', region: 'ME', cat: 'Disaster', art: 'plant', badge: 'C', lon: 47.8, lat: 30.5,
     head: 'Basra power-station fire kills 4', sum: '800 MW Hartha plant shut; 35 injured.', src: 'INA · Anadolu · Al Jazeera' },
-  { n: 9, place: 'Taipei', region: 'EA', cat: 'Markets', art: 'chart', badge: 'O', lon: 121.5, lat: 25.0,
+  { n: 9, tag: 'TAIWAN: STOCKS', place: 'Taipei', region: 'EA', cat: 'Markets', art: 'chart', badge: 'O', lon: 121.5, lat: 25.0,
     head: 'Taiwan curbs short-selling after rout', sum: 'FSC acts after worst week since 1991.', src: 'Financial Supervisory Commission · Taipei Times' },
-  { n: 10, place: 'London', region: 'EU', cat: 'Rugby', art: 'rugby', badge: 'O', lon: -0.3, lat: 51.5,
+  { n: 10, tag: 'RUGBY: ENG v NZ', place: 'London', region: 'EU', cat: 'Rugby', art: 'rugby', badge: 'O', lon: -0.3, lat: 51.5,
     head: 'England beat All Blacks 37-12', sum: 'New Zealand’s heaviest loss to England.', src: 'RNZ · match result' },
-  { n: 11, place: 'Abuja', region: 'AF', cat: 'Football', art: 'ballot', badge: 'O', lon: 7.5, lat: 9.1,
+  { n: 11, tag: 'FIFA: INFANTINO', place: 'Abuja', region: 'AF', cat: 'Football', art: 'ballot', badge: 'O', lon: 7.5, lat: 9.1,
     head: 'All 54 CAF members back Infantino', sum: 'FIFA vote set for March 2027 in Rabat.', src: 'CAF assembly · AFP' },
-  { n: 12, place: 'Mastung, Pakistan', region: 'SA', cat: 'Security', art: 'peaks', badge: 'O', lon: 66.8, lat: 29.8,
+  { n: 12, tag: 'PAKISTAN: RAID', place: 'Mastung, Pakistan', region: 'SA', cat: 'Security', art: 'peaks', badge: 'O', lon: 66.8, lat: 29.8,
     head: 'Pakistan says 15 militants killed', sum: 'Balochistan raid; hideouts destroyed.', src: 'Pakistani state media · Dawn' },
-  { n: 13, place: 'Las Vegas', region: 'AM', cat: 'Formula 1', art: 'f1', badge: 'O', lon: -115.2, lat: 36.2,
+  { n: 13, tag: 'F1: LAS VEGAS', place: 'Las Vegas', region: 'AM', cat: 'Formula 1', art: 'f1', badge: 'O', lon: -115.2, lat: 36.2,
     head: 'Verstappen takes pole in Las Vegas', sum: 'Antonelli docked 5 places; Russell 2nd.', src: 'AP · Al Jazeera · F1 timing' },
 ];
 

@@ -2,6 +2,9 @@
 import { Canvas, Path, hex, mix, drawText, measure, Font, type RGB, type Pt } from './gfx.ts';
 import type { Story } from './news.ts';
 
+// variant switches (set by main.ts): simpler hero art, fewer secondary words in tiles, bigger key facts
+export const OPT = { heroSimple: false, tileSimple: false, keyBoost: 0 };
+
 export type Art = (cv: Canvas, x: number, y: number, w: number, h: number, s: Story) => void;
 const F = (n: string) => new Font(new URL('./fonts/' + n, import.meta.url));
 export const fK = F('Lato-Black.ttf'), fB = F('Lato-Bold.ttf'), fR = F('Lato-Regular.ttf'), fS = F('DMSerifDisplay-Regular.ttf');
@@ -102,6 +105,7 @@ function label(cv: Canvas, s: string, x: number, y: number, size: number, col: R
 }
 // the big key fact of a tile: serif figure plus a short caption under it
 function keyFact(cv: Canvas, big: string, cap: string, x: number, y: number, col: RGB, capCol: RGB, size = 25, capBg?: RGB) {
+  size += OPT.keyBoost;
   text(cv, fS, size, col, big, x, y, 'r');
   if (!cap) return;
   const w = tw(fK, 9.2, cap) + 0.3 * cap.length;
@@ -125,17 +129,17 @@ const gulf: Art = (cv, x, y, w, h) => {
   const [bx, by] = f(50.55, 26.05);
   dashed(cv, f(54.2, 27.0), [bx + 6, by - 6], 2.2, hex('#ff5a3c'), 6, 4, -14);
   dashed(cv, f(53.6, 27.2), [bx + 4, by - 9], 2.2, hex('#ff5a3c'), 6, 4, -9);
-  burst(cv, bx, by, 17, hex('#e8291c'), hex('#ffd65a'));
-  label(cv, 'BAHRAIN', bx + 20, by + 2, 11, P.white, hex('#0f2c44'));
-  label(cv, '2 air bases hit', bx + 20, by + 17, 8.6, hex('#ffd65a'), hex('#0f2c44'));
-  label(cv, 'IRAN', x + w - 10, y + 22, 12, hex('#5c4520'), undefined, 'r');
+  burst(cv, bx, by, OPT.heroSimple ? 23 : 17, hex('#e8291c'), hex('#ffd65a'));
+  label(cv, 'BAHRAIN', bx + (OPT.heroSimple ? 26 : 20), by + (OPT.heroSimple ? 3 : 2), OPT.heroSimple ? 14 : 11, P.white, hex('#0f2c44'));
+  if (!OPT.heroSimple) label(cv, '2 air bases hit', bx + 20, by + 17, 8.6, hex('#ffd65a'), hex('#0f2c44'));
+  if (!OPT.heroSimple) label(cv, 'IRAN', x + w - 10, y + 22, 12, hex('#5c4520'), undefined, 'r');
   // Hormuz: two tankers struck
   for (const [tx, ty] of [[x + w - 74, y + 66], [x + w - 34, y + 84]] as Pt[]) {
-    tanker(cv, tx, ty, 13, hex('#111111'));
+    tanker(cv, tx, ty, OPT.heroSimple ? 16 : 13, hex('#111111'));
     burst(cv, tx - 3, ty - 9, 8, hex('#ff7a1a'), hex('#ffe08a'), 12);
   }
-  label(cv, 'HORMUZ', x + w - 54, y + 48, 10, P.white, undefined, 'c');
-  label(cv, '2 tankers hit', x + w - 8, y + 104, 8.6, hex('#ffd65a'), hex('#0f2c44'), 'r');
+  label(cv, 'HORMUZ', x + w - 54, y + 48, OPT.heroSimple ? 13 : 10, P.white, undefined, 'c');
+  if (!OPT.heroSimple) label(cv, '2 tankers hit', x + w - 8, y + 104, 8.6, hex('#ffd65a'), hex('#0f2c44'), 'r');
 };
 
 // ---------------------------------------------------------------- hero 2: Peru quake (focal point: the deep hypocentre)
@@ -155,7 +159,7 @@ const quake: Art = (cv, x, y, w, h) => {
   const lx = x + w * 0.2;
   cv.rect(lx - 5, surf - 9, 4, 9, P.ink); cv.rect(lx, surf - 13, 4, 13, P.ink); cv.rect(lx + 5, surf - 7, 4, 7, P.ink);
   label(cv, 'LIMA', lx - 6, surf + 13, 9, P.white);
-  text(cv, fB, 7.5, hex('#f2d9b0'), 'shaking felt', lx - 6, surf + 23);
+  if (!OPT.heroSimple) text(cv, fB, 7.5, hex('#f2d9b0'), 'shaking felt', lx - 6, surf + 23);
   // hypocentre at ~110–130 km
   const ex = x + w * 0.64, hy = surf + 118 * kmPx;
   for (let r = 1; r <= 4; r++) cv.line(new Path().ellipse(ex, hy, r * 15, r * 10).polys[0], 1.4, hex('#ffcf6a'), 0.75 - r * 0.15, true);
@@ -163,7 +167,8 @@ const quake: Art = (cv, x, y, w, h) => {
   burst(cv, ex, hy, 14, hex('#e8291c'), hex('#ffe08a'));
   cv.circle(ex, surf - 28, 4, hex('#e8291c'));
   label(cv, 'ONDORES', ex + 8, surf - 31, 9, P.ink);
-  label(cv, '108–129 km', ex + 20, hy + 4, 10, P.white, hex('#2a1a0f'));
+  if (OPT.heroSimple) label(cv, '108–129 KM DEEP', ex - 20, hy + 4, 11.5, P.white, hex('#2a1a0f'), 'r');
+  else label(cv, '108–129 km', ex + 20, hy + 4, 10, P.white, hex('#2a1a0f'));
 };
 
 // ---------------------------------------------------------------- hero 3: COP31 overtime (focal point: the red 13th day)
@@ -172,7 +177,7 @@ const cop: Art = (cv, x, y, w, h) => {
   // thermometer + 1.5°C
   const tx = x + w * 0.66;
   cv.rrect(tx - 5, y + 8, 10, 52, 5, P.white); cv.circle(tx, y + 62, 8.5, hex('#d0281c')); cv.rect(tx - 2.4, y + 24, 4.8, 38, hex('#d0281c'));
-  label(cv, '1.5°C', tx + 12, y + 30, 11, P.ink);
+  if (!OPT.heroSimple) label(cv, '1.5°C', tx + 12, y + 30, 11, P.ink);
   // calendar: 9–20 November scheduled, 21 overtime
   const n = 13, cx0 = x + 8, cw = (w - 16) / n, cy = y + 74, ch = 30;
   for (let i = 0; i < n; i++) {
@@ -181,9 +186,9 @@ const cop: Art = (cv, x, y, w, h) => {
     cv.rect(cx0 + i * cw + 1, top, cw - 2, ch + (over ? 10 : 0), over ? hex('#d0281c') : hex('#2e7d4f'));
     text(cv, fK, over ? 13 : 11, P.white, String(9 + i), cx0 + i * cw + cw / 2, cy + 20, 'c');
   }
-  label(cv, '+1 DAY', x + w - 10, cy - 15, 12, hex('#d0281c'), undefined, 'r');
-  text(cv, fK, 8, hex('#1e5a38'), 'NOV 9–20 SCHEDULED', cx0 + 2, cy - 5, 'l', 0.4);
-  label(cv, 'approval session Sun 06:00 GMT', x + w - 8, y + h - 8, 8.4, P.ink, undefined, 'r', fB);
+  label(cv, '+1 DAY', x + w - 10, cy - 15, OPT.heroSimple ? 15 : 12, hex('#d0281c'), undefined, 'r');
+  if (!OPT.heroSimple) text(cv, fK, 8, hex('#1e5a38'), 'NOV 9–20 SCHEDULED', cx0 + 2, cy - 5, 'l', 0.4);
+  if (!OPT.heroSimple) label(cv, 'approval session Sun 06:00 GMT', x + w - 8, y + h - 8, 8.4, P.ink, undefined, 'r', fB);
 };
 
 // ---------------------------------------------------------------- tiles (each: one bold icon + one big key fact)
@@ -224,12 +229,12 @@ const wanted: Art = (cv, x, y, w, h) => {
   const px = x + 12, py = y + 5, pw = 46, ph = h - 10;
   cv.rect(px, py, pw, ph, hex('#fbf4e2')); cv.strokeRect(px, py, pw, ph, 1.2, P.ink);
   person(cv, px + pw / 2, py + ph - 5, 10, P.ink);
-  label(cv, '$5M', px + pw / 2, py + 12, 9, P.red, undefined, 'c');
+  if (!OPT.tileSimple) label(cv, '$5M', px + pw / 2, py + 12, 9, P.red, undefined, 'c');
   // stamp
   const sx = x + 66, sy = y + 18;
   cv.strokeRect(sx, sy, w - 74, 26, 2.4, hex('#c0211a'));
   label(cv, 'CAPTURED', sx + (w - 74) / 2, sy + 18, 14, hex('#c0211a'), undefined, 'c');
-  text(cv, fK, 8, P.ink, 'FBI TOP TEN', sx + (w - 74) / 2, sy + 36, 'c', 0.4);
+  if (!OPT.tileSimple) text(cv, fK, 8, P.ink, 'FBI TOP TEN', sx + (w - 74) / 2, sy + 36, 'c', 0.4);
 };
 const trade: Art = (cv, x, y, w, h) => {
   cv.vgrad(x, y, w, h, hex('#173d78'), hex('#0f2b57'));
@@ -274,7 +279,7 @@ const rugby: Art = (cv, x, y, w, h) => {
   cv.fill(new Path().ellipse(px + 30, y + 44, 12, 7.5), hex('#8a4b2a'));
   const bx = x + 70, bw = w - 78;
   cv.rrect(bx, y + 9, bw, 46, 4, hex('#111111'));
-  text(cv, fK, 9, P.white, 'ENG', bx + 9, y + 22); text(cv, fK, 9, P.white, 'NZL', bx + bw - 9, y + 22, 'r');
+  if (!OPT.tileSimple) { text(cv, fK, 9, P.white, 'ENG', bx + 9, y + 22); text(cv, fK, 9, P.white, 'NZL', bx + bw - 9, y + 22, 'r'); }
   text(cv, fS, 26, hex('#ffd04a'), '37–12', bx + bw / 2, y + 48, 'c');
 };
 const ballot: Art = (cv, x, y, w, h) => {

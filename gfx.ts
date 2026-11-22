@@ -613,7 +613,7 @@ export class Font {
 }
 
 // ---------------------------------------------------------------- text
-export type TextStyle = { font: Font; size: number; color: RGB; track?: number; gamma?: number; skew?: number };
+export type TextStyle = { font: Font; size: number; color: RGB; track?: number; gamma?: number; skew?: number; bold?: number };
 
 export function measure(st: TextStyle, s: string): number {
   const f = st.font, k = st.size / f.upm;
@@ -642,6 +642,8 @@ export function drawText(cv: Canvas, st: TextStyle, s: string, x: number, y: num
     pen += f.advs[g] * k + (st.track ?? 0);
     prev = g;
   }
+  // synthetic bold: union of the outline with a copy shifted right by st.bold px (signed-area sums clamp to 1)
+  if (st.bold) { const n = path.polys.length; for (let i = 0; i < n; i++) path.polys.push(path.polys[i].map(([px, py]) => [px + st.bold!, py] as Pt)); }
   cv.fill(path, st.color, 1, st.gamma ?? 0.85);
   return w;
 }

@@ -172,7 +172,7 @@ const quake: Art = (cv, x, y, w, h) => {
   // Lima
   const lx = x + w * 0.22;
   cv.rect(lx - 4, surf - 7, 3, 7, P.ink); cv.rect(lx, surf - 10, 3, 10, P.ink); cv.rect(lx + 4, surf - 6, 3, 6, P.ink);
-  label(cv, 'LIMA · felt', lx - 4, surf - 14, 7, P.ink);
+  label(cv, 'LIMA (felt)', lx - 4, surf + 12, 7, P.white);
   // epicentre & hypocentre
   const ex = x + w * 0.66;
   const hyUsgs = surf + 108 * depthPx, hyIgp = surf + 129 * depthPx;
@@ -180,7 +180,7 @@ const quake: Art = (cv, x, y, w, h) => {
   dashed(cv, [ex, surf - 22], [ex, hyUsgs - 6], 1, P.ink, 3, 2);
   burst(cv, ex, hyIgp - 6, 9, P.red, hex('#ffd27a'));
   cv.circle(ex, surf - 24, 3, P.red);
-  label(cv, 'ONDORES', ex + 6, surf - 30, 7, P.ink);
+  label(cv, 'ONDORES', ex + 7, surf - 15, 7, P.white);
   // depth axis
   const ax = x + w - 22;
   cv.vline(ax, surf, surf + 150 * depthPx, 1, P.white);
@@ -241,7 +241,7 @@ const ship: Art = (cv, x, y, w, h) => {
   }
   dashed(cv, [x + w - 40, y + 16], [sx + 40, sy - 22], 1, P.red, 3, 2, 6);
   label(cv, 'SPARTA II', sx + 2, sy + 13, 7, P.white);
-  label(cv, '2 drones', x + w - 50, y + 36, 7, P.ink, P.white);
+  label(cv, '2 drones', x + w - 50, y + 31, 7, P.ink, P.white);
 };
 const robot: Art = (cv, x, y, w, h) => {
   cv.vgrad(x, y, w, h, hex('#d6e3f0'), hex('#a9c3dd'));
@@ -252,13 +252,13 @@ const robot: Art = (cv, x, y, w, h) => {
   cv.rrect(rx - 13, ry + 24, 26, 20, 3, hex('#5b6770'));
   cv.line([[rx - 13, ry + 30], [rx - 24, ry + 40]], 3, hex('#5b6770')); cv.line([[rx + 13, ry + 30], [rx + 24, ry + 40]], 3, hex('#5b6770'));
   // hand-raised "stop" palm over it
-  text(cv, fS, 30, P.ink, '128', x + 72, y + 34);
-  text(cv, fB, 7.5, P.ink, 'states in agreement', x + 72, y + 44);
+  text(cv, fS, 26, P.ink, '128', x + 72, y + 27);
+  text(cv, fB, 7.5, P.ink, 'states in agreement', x + 72, y + 36);
   label(cv, '→ 2028', x + w - 8, y + 16, 9, P.white, P.ink, 'r');
 };
 const wanted: Art = (cv, x, y, w, h) => {
   cv.vgrad(x, y, w, h, hex('#e9dcc0'), hex('#d5c19b'));
-  const px = x + 14, py = y + 5, pw = 54, ph = 48;
+  const px = x + 14, py = y + 4, pw = 50, ph = 44;
   cv.rect(px, py, pw, ph, hex('#fbf4e2')); cv.strokeRect(px, py, pw, ph, 1, P.ink);
   label(cv, 'WANTED', px + pw / 2, py + 10, 8, P.red, undefined, 'c');
   person(cv, px + pw / 2, py + 40, 9, P.ink);
@@ -281,9 +281,9 @@ const trade: Art = (cv, x, y, w, h) => {
   cv.rect(fx, sy - 12, 30, 12, P.red); cv.rect(fx, sy, 30, 12, P.white); cv.strokeRect(fx, sy - 12, 30, 24, 0.8, P.ink);
   // bar: 90.4% duty-free from day one
   const bx = x + 102, bw = w - 110;
-  text(cv, fS, 20, P.ink, '90.4%', bx, y + 24);
-  cv.rect(bx, y + 31, bw, 7, hex('#ffffff')); cv.rect(bx, y + 31, bw * 0.904, 7, hex('#2a87b8'));
-  text(cv, fB, 7, P.ink, 'tariff lines at 0%', bx, y + 47);
+  text(cv, fS, 20, P.ink, '90.4%', bx, y + 20);
+  cv.rect(bx, y + 24, bw, 6, hex('#ffffff')); cv.rect(bx, y + 24, bw * 0.904, 6, hex('#2a87b8'));
+  text(cv, fB, 7, P.ink, 'tariff lines at 0%', bx, y + 37);
 };
 const plant: Art = (cv, x, y, w, h) => {
   cv.vgrad(x, y, w, h, hex('#3b3a40'), hex('#7a5547'));
@@ -298,8 +298,8 @@ const plant: Art = (cv, x, y, w, h) => {
   // pylons
   cv.line([[x + 100, base], [x + 106, base - 34], [x + 112, base]], 1.4, hex('#c9c5bb'));
   cv.line([[x + 101, base - 22], [x + 111, base - 22]], 1.2, hex('#c9c5bb'));
-  text(cv, fK, 11, P.white, '800 MW', x + 122, y + 20);
-  text(cv, fK, 9, hex('#ffcf8a'), '4 dead · 35 hurt', x + 122, y + 33);
+  text(cv, fK, 11, P.white, '800 MW', x + 122, y + 16);
+  text(cv, fK, 9, hex('#ffcf8a'), '4 dead · 35 hurt', x + 122, y + 28);
 };
 const chart: Art = (cv, x, y, w, h) => {
   cv.rect(x, y, w, h, hex('#f1ece0'));
@@ -323,9 +323,9 @@ const rugby: Art = (cv, x, y, w, h) => {
   cv.line([[px + 22, y + 40], [px + 38, y + 40]], 0.8, P.white);
   // scoreboard
   const bx = x + 74, bw = w - 82;
-  cv.rrect(bx, y + 9, bw, 36, 3, P.ink);
-  text(cv, fK, 8, P.white, 'ENG', bx + 10, y + 21); text(cv, fK, 8, P.white, 'NZL', bx + bw - 10, y + 21, 'r');
-  text(cv, fK, 18, hex('#f2c230'), '37 – 12', bx + bw / 2, y + 40, 'c');
+  cv.rrect(bx, y + 5, bw, 31, 3, P.ink);
+  text(cv, fK, 8, P.white, 'ENG', bx + 8, y + 15); text(cv, fK, 8, P.white, 'NZL', bx + bw - 8, y + 15, 'r');
+  text(cv, fK, 16, hex('#f2c230'), '37 – 12', bx + bw / 2, y + 32, 'c');
 };
 const ballot: Art = (cv, x, y, w, h) => {
   cv.vgrad(x, y, w, h, hex('#e4efe6'), hex('#bcd8c4'));
@@ -338,8 +338,8 @@ const ballot: Art = (cv, x, y, w, h) => {
   const fx = x + 86, fy = y + 30;
   cv.circle(fx, fy, 13, P.white); cv.circle(fx, fy, 4.5, P.ink);
   for (let i = 0; i < 5; i++) { const a = (i / 5) * Math.PI * 2 - Math.PI / 2; cv.circle(fx + Math.cos(a) * 10.5, fy + Math.sin(a) * 10.5, 2.4, P.ink); }
-  text(cv, fS, 20, P.ink, '54/54', x + w - 8, y + 28, 'r');
-  text(cv, fB, 7, P.ink, 'CAF members', x + w - 8, y + 38, 'r');
+  text(cv, fS, 20, P.ink, '54/54', x + w - 8, y + 22, 'r');
+  text(cv, fB, 7, P.ink, 'CAF members', x + w - 8, y + 31, 'r');
 };
 const peaks: Art = (cv, x, y, w, h) => {
   cv.vgrad(x, y, w, h, hex('#f0dcc0'), hex('#e3c49b'));

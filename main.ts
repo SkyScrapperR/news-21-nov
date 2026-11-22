@@ -60,6 +60,15 @@ function lines(st: TextStyle, s: string, x: number, y: number, w: number, max: n
   return ls.length;
 }
 
+// largest serif headline size (max..min) whose text wraps to at most two lines in width w, with synthetic bold
+function fitHead(head: string, w: number, max: number, min: number, bold: number): TextStyle {
+  for (let size = max; size > min; size -= 0.25) {
+    const st = { ...T(serif, size, C.ink), bold };
+    if (wrap(st, head, w - bold - 1).length <= 2) return st;
+  }
+  return { ...T(serif, min, C.ink), bold };
+}
+
 function kicker(s: Story, x: number, y: number, size: number) {
   const col = regionColor(s.region);
   numDot(s.n, x + size * 0.7, y - size * 0.36, size * 0.72, col);
@@ -164,11 +173,11 @@ let y = 134;
     badge(s.badge, x + hw - 6, y + ah - 17, 'r', 7.5);
     let ty = y + ah + 15;
     kicker(s, x, ty, 9);
-    ty += 22;
-    const hs = T(serif, 19.5, C.ink);
-    const nl = lines(hs, s.head, x, ty, hw, 2, 21);
-    ty += (nl - 1) * 21 + 15;
-    lines(T(sans, 10.6, C.soft), s.sum, x, ty, hw, 3, 12.4);
+    const hs = fitHead(s.head, hw, 26, 19, 0.55);
+    ty += hs.size + 3;
+    const nl = lines(hs, s.head, x, ty, hw, 2, hs.size * 1.04);
+    ty += (nl - 1) * hs.size * 1.04 + 15;
+    lines(T(sans, 10.6, C.soft), s.sum, x, ty, hw, Math.max(1, Math.floor((y + ah + 110 - ty) / 12.4) + 1), 12.4);
   });
   y += ah + 112;
 }
@@ -176,7 +185,7 @@ let y = 134;
 // ---------------------------------------------------------------- 6. tiles
 {
   cv.hline(M, W - M, y - 4, 1, C.ink);
-  const cols = 5, gap = 10, tw = (W - 2 * M - (cols - 1) * gap) / cols, ah = 58, th = 126;
+  const cols = 5, gap = 10, tw = (W - 2 * M - (cols - 1) * gap) / cols, ah = 52, th = 126;
   TILES.forEach((s, i) => {
     const x = M + (i % cols) * (tw + gap), ty0 = y + 4 + Math.floor(i / cols) * (th + 6);
     cv.setClip(x, ty0, tw, ah);
@@ -185,9 +194,10 @@ let y = 134;
     badge(s.badge, x + tw - 4, ty0 + ah - 15, 'r', 6.8);
     let ty = ty0 + ah + 13;
     kicker(s, x, ty, 7.6);
-    ty += 17;
-    const nl = lines(T(serif, 14.2, C.ink), s.head, x, ty, tw, 2, 15.2);
-    ty += (nl - 1) * 15.2 + 13;
+    const hs = fitHead(s.head, tw, 17.5, 13.5, 0.35);
+    ty += hs.size + 3;
+    const nl = lines(hs, s.head, x, ty, tw, 2, hs.size * 1.04);
+    ty += (nl - 1) * hs.size * 1.04 + 13;
     lines(T(sans, 9.2, C.soft), s.sum, x, ty, tw, 1, 10);
     drawText(cv, T(sansB, 7.6, C.mute), s.src, x, ty + 11);
   });
@@ -288,4 +298,4 @@ let y = 134;
   drawText(cv, T(sans, 7.8, C.mute), 'All drawings original · type: DM Serif & Lato (OFL)', W - M, y + 24, 'r');
 }
 
-writeFileSync(join(process.env.MAKEFUN_OUTPUT_DIR ?? '/output', 'entry.png'), cv.pngIndexed(256));
+writeFileSync(join(process.env.MAKEFUN_OUTPUT_DIR ?? '/output', 'entry.png'), cv.pngIndexed(128));

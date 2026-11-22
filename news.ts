@@ -48,11 +48,11 @@ export const HEROES: Story[] = [
 
 export const TILES: Story[] = [
   { n: 4, place: 'Gulf of Finland', region: 'EU', cat: 'Security', art: 'ship', badge: 'C', lon: 26.8, lat: 60.0,
-    head: 'Drones hit Russian freighter off Finland', sum: 'Crew evacuated; Finland suspects Ukraine.', src: 'Finnish MoD · Reuters · Anadolu' },
+    head: 'Drones hit Russian ship off Finland', sum: 'Crew evacuated; Finland suspects Ukraine.', src: 'Finnish MoD · Reuters · Anadolu' },
   { n: 5, place: 'Geneva', region: 'GL', cat: 'Arms control', art: 'robot', badge: 'C', lon: 6.1, lat: 46.2,
-    head: '128 nations back talks on killer-robot rules', sum: 'US, Russia, Israel opposed binding rules.', src: 'AFP · Anadolu · Al Jazeera' },
+    head: '128 nations back killer-robot talks', sum: 'US, Russia, Israel opposed binding rules.', src: 'AFP · Anadolu · Al Jazeera' },
   { n: 6, place: 'Sinaloa, Mexico', region: 'AM', cat: 'Crime', art: 'wanted', badge: 'C', lon: -108.5, lat: 25.6,
-    head: 'Mexico captures FBI most-wanted Chapo Isidro', sum: 'Seized in Guasave; roadblocks followed.', src: 'AP · Al Jazeera · Mexican defence ministry' },
+    head: 'Mexico captures cartel boss Chapo Isidro', sum: 'FBI most-wanted; seized in Guasave.', src: 'AP · Al Jazeera · Mexican defence ministry' },
   { n: 7, place: 'Indonesia–EU', region: 'SEA', cat: 'Trade', art: 'trade', badge: 'O', lon: 106.8, lat: -6.2,
     head: 'Indonesia and EU sign trade pact', sum: 'Signed in Brussels; in force from 2027.', src: 'Antara · Indonesian government' },
   { n: 8, place: 'Basra, Iraq', region: 'ME', cat: 'Disaster', art: 'plant', badge: 'C', lon: 47.8, lat: 30.5,
